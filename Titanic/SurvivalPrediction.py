@@ -86,3 +86,27 @@ def clean_data(df, drop_passenger_id=False):
     ### training random forest classifier 
     
     train_data = df_train.values
+from sklearn.ensemble import RandomForestClassifier
+
+clf = RandomForestClassifier(max_depth=20, n_estimators=100, max_features="sqrt", n_jobs=-1, 
+                              random_state = 7463, oob_score = True)
+                              
+                              # Training data features, skip the first column 'Survived'
+train_features = train_data[:, 1:]
+
+# 'Survived' column values
+train_target = train_data[:, 0]
+
+# Fit the model to our training data
+clf = clf.fit(train_features, train_target)
+
+from sklearn.cross_validation import cross_val_score
+scores = cross_val_score(clf, train_features,train_target, cv=100, n_jobs=-1, scoring='accuracy')
+print(scores.mean(), scores.std())
+
+##predicting survival for test data
+
+test_x = test_data[:, 1:]
+
+# Predict the Survival values for the test data
+test_y = map(int, clf.predict(test_x))
